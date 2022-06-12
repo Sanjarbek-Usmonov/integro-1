@@ -1,9 +1,10 @@
+from functools import partial
 from gc import get_objects
 from django.contrib.auth import get_user_model
 from rest_framework.generics import ListAPIView
 from rest_framework import permissions, views, response, status
-from .models import Users, Section
-from .serializers import Userserializer, SectionSerializer
+from .models import Users, Section, Singer
+from .serializers import Userserializer, SectionSerializer, SingerSerializer
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
@@ -24,7 +25,7 @@ class SectionAPIView(views.APIView):
             serializer.save()
             return response.Response(serializer.data)
         else:
-            return response.Response("Music turini nomini kirit:")
+            return response.Response({"detail": "Music turini nomini kirit:"})
 
     
 class SectionDetailAPIView(views.APIView):
@@ -47,4 +48,45 @@ class SectionDetailAPIView(views.APIView):
         return response.Response({"detail": "deleted"})
         
 
+class SingerAPIView(views.APIView):
+    def get(self, request):
+        query = Singer.objects.all()
+        serializer = SingerSerializer(query, many=True)
+        return response.Response(serializer.data)
+
+    def post(self, request):
+        serializer = SingerSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return response.Response(serializer.data)
+        else:
+            return response.Response({"detail": "nimadir kirit"})
+
+class SingerDetailAPIView(views.APIView):
+    def get_object(self, pk):
+        return get_object_or_404(Singer, pk=pk)
+
+    def put(self, request, pk):
+        singer = self.get_object(pk)
+        serializer = SingerSerializer(instance=singer, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return response.Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):
+            singer = self.get_object(pk)
+            serializer = SingerSerializer(instance=singer, data=request.data, partial=True)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return response.Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        singer = self.get_object(pk)
+        singer.delete()
+        return response.Response({"detail": "deleted"})
+        
 

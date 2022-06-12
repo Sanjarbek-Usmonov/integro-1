@@ -4,9 +4,9 @@ from django.db import models
 from django.forms import CharField, IntegerField
 
 CHOICES = (
-    ('male', 'erkak'),
-    ('female', 'ayol'),
-    ('other', 'boshqa'),
+    ('erkak', 'erkak'),
+    ('ayol', 'ayol'),
+    ('boshqa', 'boshqa'),
 )
 
 
