@@ -1,10 +1,8 @@
-from functools import partial
-from gc import get_objects
 from django.contrib.auth import get_user_model
 from rest_framework.generics import ListAPIView
-from rest_framework import permissions, views, response, status
-from .models import Users, Section, Singer
-from .serializers import Userserializer, SectionSerializer, SingerSerializer
+from rest_framework import permissions, views, response, status, viewsets
+from .models import Users, Section, Singer, Music
+from .serializers import Userserializer, SectionSerializer, SingerSerializer, MusicSerializer
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
@@ -90,3 +88,37 @@ class SingerDetailAPIView(views.APIView):
         return response.Response({"detail": "deleted"})
         
 
+# class MusicAPIView(views.APIView):
+#     def get(self, request):
+#         query = Music.objects.all()
+#         serializer = MusicSerializer(query, many=True)
+#         return response.Response(serializer.data)
+
+#     def post(self, request):
+#         serializer = MusicSerializer(data=request.data)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return response.Response(serializer.data)
+#         else:
+#             return response.Response({"detail": "Music turini nomini kirit:"})
+
+
+class MusicViewSet(viewsets.ModelViewSet):
+    serializer_class = MusicSerializer
+    queryset = Music.objects.all()
+
+#     def create(self, request, *args, **kwargs):
+#         data = {
+#             "singer": request.POST.get('singer'),
+#             "music": request.POST.get('music'),
+#             "text": request.POST.get('text'),
+#             "section": request.POST.get('section'),
+#             }
+#         s = Singer.objects.filter(id=data["singer"])
+#         data["singer"] = s
+#         serializer = self.serializer_class(data=data)  
+#         if serializer.is_valid():
+#             serializer.save()
+#             return response.Response(data=serializer.data, status=status.HTTP_201_CREATED)  
+#         else:
+#             return response.Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)  

@@ -1,5 +1,9 @@
+from asyncore import read
+from dataclasses import fields
+from imp import source_from_cache
+from pyexpat import model
 from rest_framework import serializers
-from .models import Section, Singer, CHOICES
+from .models import Music, Section, Singer, CHOICES
 
 class Userserializer(serializers.Serializer):
     id = serializers.IntegerField()
@@ -21,4 +25,19 @@ class SingerSerializer(serializers.ModelSerializer):
         model = Singer
 
 class MusicSerializer(serializers.ModelSerializer):
-    singer = serializers.RelatedField(source='Singer', read_only=True)
+    singer = serializers.PrimaryKeyRelatedField(queryset=Singer.objects.all()) 
+    music = serializers.FileField()
+    section = serializers.PrimaryKeyRelatedField(queryset=Section.objects.all())
+
+    class Meta:
+        fields = ['id', 'singer', 'text', 'music', 'section']
+        model = Music
+
+    # def create(self, validated_data):
+    #     # print(validated_data)
+    #     singer = validated_data.pop()
+    #     # print(singer)
+    #     # singer_instance = Singer.objects.get(id=singer)
+    #     # print(singer_instance)
+    #     music_instance = Music.objects.create(**validated_data)
+    #     return music_instance
